@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Connexion')"></head>
+<body>
+
+<div th:replace="fragments/header :: navbar"></div>
+
+<div>
+    <div class="container">
+        <h2>Se connecter</h2>
+        <!--Formulaire avec attribut action /login avec méthode post-->
+        <form method="post" th:action="@{/login}">
+            <!--        Champ username-->
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur</label>
+                <!-- >username car c'est ce qu'on a défini au niveau de WebSecurityConfiguration -->
+                <input class="form-control" id="username" name="username" placeholder="Nom d'utilisateur" type="text">
+            </div>
+            <!--        Champ password-->
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input class="form-control" id="password" name="password" placeholder="Mot de passe" type="password">
+            </div>
+            <!--        Bouton submit-->
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Connexion</button>
+        </form>
+    </div>
+</div>
+</body>
+
+</html>

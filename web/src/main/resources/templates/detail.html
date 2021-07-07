@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:replace="fragments/header :: head('Détail de la commune')"></head>
+</head>
+<body>
+
+<div>
+    <div th:replace="fragments/header :: navbar"></div>
+</div>
+
+<div>
+    <div class="container">
+        <div role="alert" th:class="|mt-1 alert alert-dismissible fade show alert-${type}|" th:if="${type}">
+            <span th:utext="${message}"></span>
+            <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <h2 th:unless="${newCommune}">Détail de la commune [[${commune.codeInsee}]], [[${commune.nom}]]</h2>
+        <h2 th:if="${newCommune}">Création d'une nouvelle commune</h2>
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+
+                <form id="saveForm" method="post"
+                      th:action="${newCommune} ? '/communes' : ('/communes/' + ${commune.codeInsee})">
+                    <div class="mt-2">
+                        <div>
+                            <div class="form-group">
+                                <label for="codeInsee">Code INSEE</label>
+
+                                <input name="codeInsee"
+                                       th:class="|form-control ${#fields.hasErrors('commune.codeInsee') ? 'is-invalid' : 'is-valid'}|"
+                                       th:value="${commune.codeInsee}" type="text"
+                                       id="codeInsee">
+                                <div class="invalid-feedback">
+                                    <ul>
+                                        <li th:errors="${commune.codeInsee}"></li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label for="nom">Nom</label>
+
+                                <input name="nom"
+                                       th:class="|form-control ${#fields.hasErrors('commune.nom') ? 'is-invalid' : 'is-valid'}|"
+                                       th:value="${commune.nom}" type="text"
+                                       id="nom">
+                                <div class="invalid-feedback">
+                                    <ul>
+                                        <li th:errors="${commune.nom}"></li>
+                                    </ul>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label for="codePostal">Code Postal</label>
+
+                                <input name="codePostal"
+                                       th:class="|form-control ${#fields.hasErrors('commune.codePostal') ? 'is-invalid' : 'is-valid'}|"
+                                       th:value="${commune.codePostal}" type="text"
+                                       id="codePostal">
+                                <div class="invalid-feedback">
+                                    <ul>
+                                        <li th:errors="${commune.codePostal}"></li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label for="latitude">Latitude</label>
+
+                                <input name="latitude"
+                                       th:class="|form-control ${#fields.hasErrors('commune.latitude') ? 'is-invalid' : 'is-valid'}|"
+                                       th:value="${commune.latitude}" type="text"
+                                       id="latitude">
+                                <div class="invalid-feedback">
+                                    <ul>
+                                        <li th:errors="${commune.latitude}"></li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label for="longitude">Longitude</label>
+
+                                <input name="longitude"
+                                       th:class="|form-control ${#fields.hasErrors('commune.longitude') ? 'is-invalid' : 'is-valid'}|"
+                                       th:value="${commune.longitude}" type="text"
+                                       id="longitude">
+                                <div class="invalid-feedback">
+                                    <ul>
+                                        <li th:errors="${commune.longitude}"></li>
+                                    </ul>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div sec:authorize="hasRole('ADMIN')">
+                            <div class="col-sm-12 mt-2 text-center">
+                                <input class="btn btn-primary" form="saveForm" type="submit" value="Enregistrer"/>
+                                <a class="btn btn-danger" th:href="|/communes/${commune.codeInsee}/delete|"
+                                   th:unless="${newCommune}">Supprimer</a>
+                            </div>
+                        </div>
+                </form>
+            </div>
+            <div class="col-lg-6" th:unless="${newCommune}">
+                <iframe width="650" height="450" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                        src="https://www.openstreetmap.org/export/embed.html?bbox=5.557883079240001%2C45.2873565333%2C5.75788307924%2C46.2873565333&amp;layer=mapnik&amp;marker=45.7873565333%2C5.65788307924"
+                        style="border: 1px solid black"></iframe>
+            </div>
+            <div class="col-sm-12 text-center mt-2" th:unless="${newCommune}">
+
+                <form class="form-inline mb-2" method="get" th:action="|/communes/${commune.codeInsee}|">
+                    <label for="perimetre">Communes dans un périmètre de&nbsp;</label>
+                    <div class="input-group input-group-sm">
+                        <input class="form-control" id="perimetre" name="perimetre" th:value="${perimetre}"
+                               type="number">
+                        <div class="input-group-append">
+                            <span class="input-group-text">km</span>
+                        </div>
+                    </div>
+                    <input class="btn btn-outline-primary btn-sm float-right" type="submit" value="Rechercher"/>
+                </form>
+            </div>
+            <div class="col-sm-6" th:unless="${newCommune}">
+                <ul class="list-group">
+                    <li class="list-group-item" th:each="communeProche : ${communesProches}">
+                        <a th:href="|/communes/${communeProche.codeInsee}|">[[${communeProche.nom}]]
+                            ([[${communeProche.codePostal}]])
+                            <span class="badge badge-primary float-right"> [[${communeProche.getDistance(commune.latitude, commune.longitude)}]] km</span></a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
